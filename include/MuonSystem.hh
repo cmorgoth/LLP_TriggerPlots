@@ -918,6 +918,7 @@ public :
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
+   virtual detectorID GetLLP_DetectorID(int index);
 };
 
 #endif
@@ -967,6 +968,10 @@ void MuonSystem::UnSetBranches(){fChain->SetBranchStatus("*",0);};
 void MuonSystem::SetAcceptanceBranches()
 {
   fChain->SetBranchStatus("gHiggsPt",1);
+  fChain->SetBranchStatus("gLLP_decay_vertex_r",1);
+  fChain->SetBranchStatus("gLLP_decay_vertex_x",1);
+  fChain->SetBranchStatus("gLLP_decay_vertex_y",1);
+  fChain->SetBranchStatus("gLLP_decay_vertex_z",1);
 };
 
 void MuonSystem::Init(TTree *tree)
