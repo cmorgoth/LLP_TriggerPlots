@@ -911,6 +911,7 @@ public :
    TBranch        *b_jetNeutralHadronEnergyFraction;   //!
 
    int    det_ID[2];
+   double ctau_weight[13];
    double ctau_weight10;
    double ctau_weight30;
    double ctau_weight60;

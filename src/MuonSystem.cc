@@ -23,19 +23,20 @@ void MuonSystem::CreateOutTree()
 {
   tOut = new TTree("ms_acc", "muon system acceptance tree");
   tOut->Branch("det_ID", det_ID, "det_ID[2]/I");
-  tOut->Branch("ctau_weight10",     &ctau_weight10,     "ctau_weight10/D");
-  tOut->Branch("ctau_weight30",     &ctau_weight30,     "ctau_weight30/D");
-  tOut->Branch("ctau_weight60",     &ctau_weight60,     "ctau_weight60/D");
-  tOut->Branch("ctau_weight100",    &ctau_weight100,    "ctau_weight100/D");
-  tOut->Branch("ctau_weight300",    &ctau_weight300,    "ctau_weight300/D");
-  tOut->Branch("ctau_weight600",    &ctau_weight600,    "ctau_weight600/D");
-  tOut->Branch("ctau_weight1000",   &ctau_weight1000,   "ctau_weight1000/D");
-  tOut->Branch("ctau_weight3000",   &ctau_weight3000,   "ctau_weight3000/D");
-  tOut->Branch("ctau_weight6000",   &ctau_weight6000,   "ctau_weight6000/D");
-  tOut->Branch("ctau_weight10000",  &ctau_weight10000,  "ctau_weight10000/D");
-  tOut->Branch("ctau_weight30000",  &ctau_weight30000,  "ctau_weight30000/D");
-  tOut->Branch("ctau_weight60000",  &ctau_weight60000,  "ctau_weight60000/D");
-  tOut->Branch("ctau_weight100000", &ctau_weight100000, "ctau_weight100000/D");
+  tOut->Branch("ctau_weight", ctau_weight, "ctau_weight[13]/D");
+  // tOut->Branch("ctau_weight10",     &ctau_weight10,     "ctau_weight10/D");
+  // tOut->Branch("ctau_weight30",     &ctau_weight30,     "ctau_weight30/D");
+  // tOut->Branch("ctau_weight60",     &ctau_weight60,     "ctau_weight60/D");
+  // tOut->Branch("ctau_weight100",    &ctau_weight100,    "ctau_weight100/D");
+  // tOut->Branch("ctau_weight300",    &ctau_weight300,    "ctau_weight300/D");
+  // tOut->Branch("ctau_weight600",    &ctau_weight600,    "ctau_weight600/D");
+  // tOut->Branch("ctau_weight1000",   &ctau_weight1000,   "ctau_weight1000/D");
+  // tOut->Branch("ctau_weight3000",   &ctau_weight3000,   "ctau_weight3000/D");
+  // tOut->Branch("ctau_weight6000",   &ctau_weight6000,   "ctau_weight6000/D");
+  // tOut->Branch("ctau_weight10000",  &ctau_weight10000,  "ctau_weight10000/D");
+  // tOut->Branch("ctau_weight30000",  &ctau_weight30000,  "ctau_weight30000/D");
+  // tOut->Branch("ctau_weight60000",  &ctau_weight60000,  "ctau_weight60000/D");
+  // tOut->Branch("ctau_weight100000", &ctau_weight100000, "ctau_weight100000/D");
 };
 
 MuonSystem::detectorID MuonSystem::GetLLP_DetectorID(int index = 0)
@@ -93,9 +94,10 @@ void MuonSystem::Loop()
    TH1F* h_ht       = new TH1F("h_ht", "ht", 100,0, 1000);
 
    Long64_t nentries = fChain->GetEntriesFast();
-   double total  = 0.0;
-   double csc    = 0.0;
-   double ms_ms = 0.0;//csc+csc;csc+dt
+   double total[13];
+   double csc[13];
+   double ms_ms[13];//csc+csc;csc+dt
+   for(int i = 0; i < 13; i++) total[i] = csc[i] = ms_ms[i]  = ctau_weight[i] = 0.0;
 
    Long64_t nbytes = 0, nb = 0;
    for (Long64_t jentry=0; jentry<nentries;jentry++) {
@@ -104,22 +106,34 @@ void MuonSystem::Loop()
       nb = fChain->GetEntry(jentry);   nbytes += nb;
       // if (Cut(ientry) < 0) continue;
       double my_weight = weight*pileupWeight;
-      total += my_weight;
-
       //std::cout << gLLP_ctau[0] << " " << gLLP_ctau[1] << " " << this->ctau << std::endl;
-      ctau_weight10 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 10.);
-      ctau_weight30 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 30.);
-      ctau_weight60 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 60.);
-      ctau_weight100 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 100.);
-      ctau_weight300 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 300.);
-      ctau_weight600 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 600.);
-      ctau_weight1000 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 1000.);
-      ctau_weight3000 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 3000.);
-      ctau_weight6000 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 6000.);
-      ctau_weight10000 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 10000.);
-      ctau_weight30000 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 30000.);
-      ctau_weight60000 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 60000.);
-      ctau_weight10000 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 100000.);
+      ctau_weight[0] = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 10.);
+      ctau_weight[1] = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 30.);
+      ctau_weight[2] = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 60.);
+      ctau_weight[3] = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 100.);
+      ctau_weight[4] = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 300.);
+      ctau_weight[5] = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 600.);
+      ctau_weight[6] = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 1000.);
+      ctau_weight[7] = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 3000.);
+      ctau_weight[8] = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 6000.);
+      ctau_weight[9] = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 10000.);
+      ctau_weight[10] = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 30000.);
+      ctau_weight[11] = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 60000.);
+      ctau_weight[12] = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 100000.);
+      //
+      // ctau_weight10 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 10.);
+      // ctau_weight30 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 30.);
+      // ctau_weight60 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 60.);
+      // ctau_weight100 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 100.);
+      // ctau_weight300 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 300.);
+      // ctau_weight600 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 600.);
+      // ctau_weight1000 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 1000.);
+      // ctau_weight3000 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 3000.);
+      // ctau_weight6000 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 6000.);
+      // ctau_weight10000 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 10000.);
+      // ctau_weight30000 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 30000.);
+      // ctau_weight60000 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 60000.);
+      // ctau_weight10000 = GetCtau(gLLP_ctau[0],gLLP_ctau[1], ctau, 100000.);
       det_ID[0] = GetLLP_DetectorID(0);
       det_ID[1] = GetLLP_DetectorID(1);
       tOut->Fill();
@@ -127,16 +141,24 @@ void MuonSystem::Loop()
       h_higgs_pt->Fill(gHiggsPt);
       h_met_pt->Fill(met);
       h_ht->Fill(this->HT);
-      if( GetLLP_DetectorID(0) == -2 || GetLLP_DetectorID(1) == -2) std::cout << "detector id: " << GetLLP_DetectorID(0) << " " << GetLLP_DetectorID(1) << std::endl;
-      if( GetLLP_DetectorID(0) == detectorID::CSC || GetLLP_DetectorID(1) == detectorID::CSC) csc += my_weight;
-      if( GetLLP_DetectorID(0) == detectorID::CSC && GetLLP_DetectorID(1) == detectorID::CSC) ms_ms += my_weight;
-      if( GetLLP_DetectorID(0) == detectorID::CSC && GetLLP_DetectorID(1) == detectorID::DT) ms_ms += my_weight;
-      if( GetLLP_DetectorID(0) == detectorID::DT  && GetLLP_DetectorID(1) == detectorID::CSC) ms_ms += my_weight;
+      for (int i = 0; i < 13; i++) total[i] += my_weight*ctau_weight[i];
+
+      if( det_ID[0] == -2 || det_ID[1] == -2) std::cout << "detector id: " << det_ID[0] << " " << det_ID[1] << std::endl;
+      if( det_ID[0] == detectorID::CSC || det_ID[1] == detectorID::CSC)
+      {
+        for (int i = 0; i < 13; i++) csc[i] += my_weight*ctau_weight[i];
+      }
+      if( det_ID[0] == detectorID::CSC && det_ID[1] == detectorID::CSC) for (int i = 0; i < 13; i++) ms_ms[i] += my_weight*ctau_weight[i];
+      if( det_ID[0] == detectorID::CSC && det_ID[1] == detectorID::DT) for (int i = 0; i < 13; i++)  ms_ms[i] += my_weight*ctau_weight[i];
+      if( det_ID[0] == detectorID::DT  && det_ID[1] == detectorID::CSC) for (int i = 0; i < 13; i++) ms_ms[i] += my_weight*ctau_weight[i];
 
    }
 
-   std::cout << "total: " << total << " csc: " << csc << " ms_ms: " << ms_ms << std::endl;
-   std::cout << "total: " << total/total << " csc: " << csc/total << " ms_ms: " << ms_ms/total << std::endl;
+   for (int i = 0; i < 13; i++)
+   {
+     std::cout << "total: " << total[i] << " csc[i]: " << csc[i] << " ms_ms: " << ms_ms[i] << std::endl;
+     std::cout << "total: " << total[i]/total[i] << " csc[i]: " << csc[i]/total[i] << " ms_ms[i]: " << ms_ms[i]/total[i] << std::endl;
+   }
 
 
    tOut->Write();
