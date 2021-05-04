@@ -6,8 +6,10 @@
 #include <iostream>
 #include <TGraph.h>
 
-#define tracker_radius 129
-#define tracker_z 300
+//#define tracker_radius 129
+#define tracker_radius 65
+//#define tracker_z 300
+#define tracker_z 200
 #define ecal_radius 184
 #define ecal_z 376
 #define hcal_radius 295
@@ -26,32 +28,22 @@ void MuonSystem::CreateOutTree()
   tOut->Branch("det_ID", det_ID, "det_ID[2]/I");
   tOut->Branch("ctau_weight", ctau_weight, "ctau_weight[13]/D");
   tOut->Branch("gLLP_ctau", gLLP_ctau, "gLLP_ctau[2]/F");
-  // tOut->Branch("ctau_weight10",     &ctau_weight10,     "ctau_weight10/D");
-  // tOut->Branch("ctau_weight30",     &ctau_weight30,     "ctau_weight30/D");
-  // tOut->Branch("ctau_weight60",     &ctau_weight60,     "ctau_weight60/D");
-  // tOut->Branch("ctau_weight100",    &ctau_weight100,    "ctau_weight100/D");
-  // tOut->Branch("ctau_weight300",    &ctau_weight300,    "ctau_weight300/D");
-  // tOut->Branch("ctau_weight600",    &ctau_weight600,    "ctau_weight600/D");
-  // tOut->Branch("ctau_weight1000",   &ctau_weight1000,   "ctau_weight1000/D");
-  // tOut->Branch("ctau_weight3000",   &ctau_weight3000,   "ctau_weight3000/D");
-  // tOut->Branch("ctau_weight6000",   &ctau_weight6000,   "ctau_weight6000/D");
-  // tOut->Branch("ctau_weight10000",  &ctau_weight10000,  "ctau_weight10000/D");
-  // tOut->Branch("ctau_weight30000",  &ctau_weight30000,  "ctau_weight30000/D");
-  // tOut->Branch("ctau_weight60000",  &ctau_weight60000,  "ctau_weight60000/D");
-  // tOut->Branch("ctau_weight100000", &ctau_weight100000, "ctau_weight100000/D");
 };
 
 MuonSystem::detectorID MuonSystem::GetLLP_DetectorID(int index = 0)
 {
-  if ( gLLP_decay_vertex_r[index] < tracker_radius && fabs(gLLP_decay_vertex_z[index]) < tracker_z) return detectorID::Tracker;
+  //if(  ) return detectorID::NO_ACC;
+
+  if ( gLLP_decay_vertex_r[index] < tracker_radius && fabs(gLLP_decay_vertex_z[index]) < tracker_z && fabs(gLLP_eta[index]) < 2.4) return detectorID::Tracker;
   else if ( gLLP_decay_vertex_r[index] >= tracker_radius && gLLP_decay_vertex_r[index] < ecal_radius && fabs(gLLP_decay_vertex_z[index]) < ecal_z) return detectorID::EB;
-  else if ( gLLP_decay_vertex_r[index] < tracker_radius && fabs(gLLP_decay_vertex_z[index]) > tracker_z && fabs(gLLP_decay_vertex_z[index]) < ecal_z) return detectorID::EE;
+  else if ( gLLP_decay_vertex_r[index] < tracker_radius && fabs(gLLP_decay_vertex_z[index]) > tracker_z && fabs(gLLP_decay_vertex_z[index]) < ecal_z && fabs(gLLP_eta[index]) < 3.0) return detectorID::EE;
   else if ( gLLP_decay_vertex_r[index] >= ecal_radius && gLLP_decay_vertex_r[index] < hcal_radius && fabs(gLLP_decay_vertex_z[index]) < hcal_z) return detectorID::HB;
-  else if ( gLLP_decay_vertex_r[index] < ecal_radius && fabs(gLLP_decay_vertex_z[index]) > ecal_z && fabs(gLLP_decay_vertex_z[index]) < hcal_z) return detectorID::HE;
+  else if ( gLLP_decay_vertex_r[index] < ecal_radius && fabs(gLLP_decay_vertex_z[index]) > ecal_z && fabs(gLLP_decay_vertex_z[index]) < hcal_z && fabs(gLLP_eta[index]) < 3.0) return detectorID::HE;
   else if ( gLLP_decay_vertex_r[index] >= hcal_radius && gLLP_decay_vertex_r[index] < solenoid_radius && fabs(gLLP_decay_vertex_z[index]) < solenoid_z) return detectorID::SM;
-  else if ( gLLP_decay_vertex_r[index] >= solenoid_radius && gLLP_decay_vertex_r[index] < dt_radius && fabs(gLLP_decay_vertex_z[index]) < dt_z) return detectorID::DT;
-  else if ( gLLP_decay_vertex_r[index] < hcal_radius && fabs(gLLP_decay_vertex_z[index]) > hcal_z && fabs(gLLP_decay_vertex_z[index]) < dt_z) return detectorID::CSC;
-  else if ( gLLP_decay_vertex_r[index] < csc_radius && fabs(gLLP_decay_vertex_z[index]) > dt_z && fabs(gLLP_decay_vertex_z[index]) < csc_z) return detectorID::CSC;
+  //else if ( gLLP_decay_vertex_r[index] >= solenoid_radius && gLLP_decay_vertex_r[index] < dt_radius && fabs(gLLP_decay_vertex_z[index]) < dt_z) return detectorID::DT;
+  else if ( gLLP_decay_vertex_r[index] >= hcal_radius && gLLP_decay_vertex_r[index] < dt_radius && fabs(gLLP_decay_vertex_z[index]) < dt_z) return detectorID::DT;
+  else if ( gLLP_decay_vertex_r[index] < hcal_radius && fabs(gLLP_decay_vertex_z[index]) > hcal_z && fabs(gLLP_decay_vertex_z[index]) < dt_z && fabs(gLLP_eta[index]) < 2.4) return detectorID::CSC;
+  else if ( gLLP_decay_vertex_r[index] < csc_radius && fabs(gLLP_decay_vertex_z[index]) > dt_z && fabs(gLLP_decay_vertex_z[index]) < csc_z && fabs(gLLP_eta[index]) < 2.4) return detectorID::CSC;
   else if ( gLLP_decay_vertex_r[index] > csc_radius  || fabs(gLLP_decay_vertex_z[index]) > csc_z ) return detectorID::OUT;
   return detectorID::NO_ACC;
 };
@@ -102,12 +94,21 @@ void MuonSystem::Loop()
    double total[nctau];
    double csc[nctau];
    double ms_ms[nctau];//csc+csc;csc+dt
+   double csc_ecal[nctau];
+   double csc_hcal[nctau];
+   double csc_cal[nctau];
+   double csc_tracker[nctau];
+
    for(int i = 0; i < nctau; i++)
    {
      total[i]       = 0.0;
      csc[i]         = 0.0;
      ms_ms[i]       = 0.0;
      ctau_weight[i] = 0.0;
+     csc_ecal[i]    = 0.0;
+     csc_hcal[i]    = 0.0;
+     csc_cal[i]     = 0.0;
+     csc_tracker[i] = 0.0;
    }
 
    Long64_t nbytes = 0, nb = 0;
@@ -124,13 +125,13 @@ void MuonSystem::Loop()
         if(ctau_weight[i] > 1e2) big_weight = true;
       }
 
-      if (big_weight) continue;
-      double my_weight = weight*pileupWeight;
+      //if (big_weight) continue;
+      //double my_weight = weight*pileupWeight;
+      double my_weight = 1.0;
       full_total += my_weight;
-      
+
       det_ID[0] = GetLLP_DetectorID(0);
       det_ID[1] = GetLLP_DetectorID(1);
-      tOut->Fill();
       //std::cout << "ctau30: " << weight_ctau30 << std::endl;
       h_higgs_pt->Fill(gHiggsPt);
       h_met_pt->Fill(met);
@@ -138,28 +139,63 @@ void MuonSystem::Loop()
 
       for (int i = 0; i < nctau; i++) total[i] += my_weight*ctau_weight[i];
 
-      if( det_ID[0] == -2 || det_ID[1] == -2) std::cout << "detector id: " << det_ID[0] << " " << det_ID[1] << std::endl;
+      //if( det_ID[0] == -2 || det_ID[1] == -2) std::cout << "detector id: " << det_ID[0] << " " << det_ID[1] << std::endl;
       if( det_ID[0] == detectorID::CSC || det_ID[1] == detectorID::CSC)
       {
         for (int i = 0; i < nctau; i++) csc[i] += my_weight*ctau_weight[i];
       }
-      if( det_ID[0] == detectorID::CSC && det_ID[1] == detectorID::CSC) for (int i = 0; i < nctau; i++) ms_ms[i] += my_weight*ctau_weight[i];
-      if( det_ID[0] == detectorID::CSC && det_ID[1] == detectorID::DT) for (int i = 0; i < nctau; i++)  ms_ms[i] += my_weight*ctau_weight[i];
-      if( det_ID[0] == detectorID::DT  && det_ID[1] == detectorID::CSC) for (int i = 0; i < nctau; i++) ms_ms[i] += my_weight*ctau_weight[i];
 
+      //if( det_ID[0] == detectorID::CSC && det_ID[1] == detectorID::CSC) for (int i = 0; i < nctau; i++) ms_ms[i] += my_weight*ctau_weight[i];
+      //if( det_ID[0] == detectorID::CSC && det_ID[1] == detectorID::DT) for (int i = 0; i < nctau; i++)  ms_ms[i] += my_weight*ctau_weight[i];
+      //if( det_ID[0] == detectorID::DT  && det_ID[1] == detectorID::CSC) for (int i = 0; i < nctau; i++) ms_ms[i] += my_weight*ctau_weight[i];
+
+      //CSC and OTHER DETECTORS
+      if( det_ID[0] == detectorID::CSC )
+      {
+        if( det_ID[1] == detectorID::EB || det_ID[1] == detectorID::EE ) for (int i = 0; i < nctau; i++) csc_ecal[i] += my_weight*ctau_weight[i];
+        if( det_ID[1] == detectorID::HB || det_ID[1] == detectorID::HE ) for (int i = 0; i < nctau; i++) csc_hcal[i] += my_weight*ctau_weight[i];
+        if( det_ID[1] == detectorID::Tracker ) for (int i = 0; i < nctau; i++) csc_tracker[i] += my_weight*ctau_weight[i];
+        if( det_ID[1] == detectorID::DT || det_ID[1] == detectorID::CSC ) for (int i = 0; i < nctau; i++) ms_ms[i] += my_weight*ctau_weight[i];
+      }
+      else if( det_ID[1] == detectorID::CSC )
+      {
+        if( det_ID[0] == detectorID::EB || det_ID[0] == detectorID::EE ) for (int i = 0; i < nctau; i++) csc_ecal[i] += my_weight*ctau_weight[i];
+        if( det_ID[0] == detectorID::HB || det_ID[0] == detectorID::HE ) for (int i = 0; i < nctau; i++) csc_hcal[i] += my_weight*ctau_weight[i];
+        if( det_ID[0] == detectorID::Tracker ) for (int i = 0; i < nctau; i++) csc_tracker[i] += my_weight*ctau_weight[i];
+        if( det_ID[0] == detectorID::DT || det_ID[0] == detectorID::CSC ) for (int i = 0; i < nctau; i++) ms_ms[i] += my_weight*ctau_weight[i];
+      }
+
+      //for (int i = 0; i < nctau; i++) csc_cal[i] += csc_ecal[i] + csc_hcal[i];
+
+      tOut->Fill();
    }
 
    std::cout << "full_total: " << full_total << std::endl;
+   double csc_v2[nctau];
+   double ms_ms_v2[nctau];
    for (int i = 0; i < nctau; i++)
    {
      std::cout << "total: " << total[i] << " csc[i]: " << csc[i] << " ms_ms: " << ms_ms[i] << std::endl;
-     csc[i]   = csc[i]/full_total;
-     ms_ms[i] = ms_ms[i]/full_total;
+     csc_v2[i]      = csc[i]/full_total;
+     csc[i]         = csc[i]/total[i];//divide by total[i] is the right way to do it!!!
+     csc_ecal[i]    = csc_ecal[i]/total[i];
+     csc_hcal[i]    = csc_hcal[i]/total[i];
+     csc_cal[i]     = csc_ecal[i]+csc_hcal[i];
+     csc_tracker[i] = csc_tracker[i]/total[i];
+     ms_ms_v2[i]    = ms_ms[i]/full_total;
+     ms_ms[i]       = ms_ms[i]/total[i];
      std::cout << "total: " << total[i]/full_total << " csc[i]: " << csc[i] << " ms_ms[i]: " << ms_ms[i] << std::endl;
    }
 
-   TGraph* acc_csc   = new TGraph(nctau, ctau_points, csc);
-   TGraph* acc_ms_ms = new TGraph(nctau, ctau_points, ms_ms);
+   TGraph* acc_csc         = new TGraph(nctau, ctau_points, csc);
+   TGraph* acc_csc_ecal    = new TGraph(nctau, ctau_points, csc_ecal);
+   TGraph* acc_csc_hcal    = new TGraph(nctau, ctau_points, csc_hcal);
+   TGraph* acc_csc_cal     = new TGraph(nctau, ctau_points, csc_cal);
+   TGraph* acc_csc_tracker = new TGraph(nctau, ctau_points, csc_tracker);
+
+   TGraph* acc_csc_v2   = new TGraph(nctau, ctau_points, csc_v2);
+   TGraph* acc_ms_ms    = new TGraph(nctau, ctau_points, ms_ms);
+   TGraph* acc_ms_ms_v2 = new TGraph(nctau, ctau_points, ms_ms_v2);
 
 
    tOut->Write();
@@ -167,6 +203,13 @@ void MuonSystem::Loop()
    h_met_pt->Write();
    h_ht->Write();
    acc_csc->Write("acc_csc");
+   acc_csc_ecal->Write("acc_csc_ecal");
+   acc_csc_hcal->Write("acc_csc_hcal");
+   acc_csc_cal->Write("acc_csc_cal");
+   acc_csc_tracker->Write("acc_csc_tracker");
+   //
+   acc_csc_v2->Write("acc_csc_v2");
    acc_ms_ms->Write("acc_ms_ms");
+   acc_ms_ms_v2->Write("acc_ms_ms_v2");
    fout->Close();
 };

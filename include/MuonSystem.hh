@@ -994,8 +994,9 @@ void MuonSystem::SetAcceptanceBranches()
   fChain->SetBranchStatus("met",1);
   //fChain->SetBranchStatus("HT",1);
 
-  fChain->SetBranchStatus("gHiggsPt",1);
-  fChain->SetBranchStatus("gLLP_ctau",1);
+  fChain->SetBranchStatus("gHiggsPt",  1);
+  fChain->SetBranchStatus("gLLP_ctau", 1);
+  fChain->SetBranchStatus("gLLP_eta",  1);
   fChain->SetBranchStatus("gLLP_decay_vertex_r",1);
   fChain->SetBranchStatus("gLLP_decay_vertex_x",1);
   fChain->SetBranchStatus("gLLP_decay_vertex_y",1);
