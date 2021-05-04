@@ -11,12 +11,15 @@
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
+#include <string>
 
 // Header file for the classes stored in the TTree if any.
 
 class MuonSystem {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
+   TTree          *tOut;//output tree pointer
+   std::string    f_out_name;
    Int_t           fCurrent; //!current Tree number in a TChain
    enum            detectorID
    {
@@ -907,6 +910,21 @@ public :
    TBranch        *b_jetChargedHadronEnergyFraction;   //!
    TBranch        *b_jetNeutralHadronEnergyFraction;   //!
 
+   int    det_ID[2];
+   double ctau_weight10;
+   double ctau_weight30;
+   double ctau_weight60;
+   double ctau_weight100;
+   double ctau_weight300;
+   double ctau_weight600;
+   double ctau_weight1000;
+   double ctau_weight3000;
+   double ctau_weight6000;
+   double ctau_weight10000;
+   double ctau_weight30000;
+   double ctau_weight60000;
+   double ctau_weight100000;
+
    MuonSystem(TTree *tree=0);
    virtual ~MuonSystem();
    virtual Int_t    Cut(Long64_t entry);
@@ -919,6 +937,8 @@ public :
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    virtual detectorID GetLLP_DetectorID(int index);
+   virtual float GetCtau(float rf_decay_length1, float rf_decay_length2, float old_ctau, float new_ctau);
+   virtual void CreateOutTree();
 };
 
 #endif
@@ -967,11 +987,19 @@ Long64_t MuonSystem::LoadTree(Long64_t entry)
 void MuonSystem::UnSetBranches(){fChain->SetBranchStatus("*",0);};
 void MuonSystem::SetAcceptanceBranches()
 {
+  fChain->SetBranchStatus("ctau", 1);
+  fChain->SetBranchStatus("weight",1);
+  fChain->SetBranchStatus("pileupWeight",1);
+  fChain->SetBranchStatus("met",1);
+  //fChain->SetBranchStatus("HT",1);
+
   fChain->SetBranchStatus("gHiggsPt",1);
+  fChain->SetBranchStatus("gLLP_ctau",1);
   fChain->SetBranchStatus("gLLP_decay_vertex_r",1);
   fChain->SetBranchStatus("gLLP_decay_vertex_x",1);
   fChain->SetBranchStatus("gLLP_decay_vertex_y",1);
   fChain->SetBranchStatus("gLLP_decay_vertex_z",1);
+
 };
 
 void MuonSystem::Init(TTree *tree)
