@@ -1,7 +1,7 @@
 void HNL_Exclusion()
 {
 //=========Macro generated from canvas: c/c
-//=========  (Wed May  5 09:39:23 2021) by ROOT version 6.20/04
+//=========  (Wed May  5 10:39:06 2021) by ROOT version 6.20/04
    TCanvas *c = new TCanvas("c", "c",0,0,800,700);
    c->SetHighLightColor(2);
    c->Range(-1.433735,-10.33333,2.180723,0.7777778);
@@ -192,7 +192,7 @@ void HNL_Exclusion()
    Graph_Graph01->GetZaxis()->SetTitleFont(42);
    graph->SetHistogram(Graph_Graph01);
    
-   graph->Draw("al");
+   graph->Draw("ac");
    
    Double_t Graph1_fx2[86] = {
    0.1518729,
@@ -395,7 +395,7 @@ void HNL_Exclusion()
    Graph_Graph12->GetZaxis()->SetTitleFont(42);
    graph->SetHistogram(Graph_Graph12);
    
-   graph->Draw("l");
+   graph->Draw("c");
    
    Double_t Graph2_fx3[137] = {
    0.9845288,
@@ -697,25 +697,27 @@ void HNL_Exclusion()
    Graph_Graph23->GetZaxis()->SetTitleFont(42);
    graph->SetHistogram(Graph_Graph23);
    
-   graph->Draw("l");
+   graph->Draw("c");
    
-   Double_t Graph3_fx4[7] = {
+   Double_t Graph3_fx4[8] = {
    1,
    2,
    4,
    5,
+   4.5,
    4,
    2,
    1};
-   Double_t Graph3_fy4[7] = {
+   Double_t Graph3_fy4[8] = {
    3e-05,
    5e-06,
    8e-07,
    1e-06,
+   3e-06,
    8e-06,
    0.005,
    0.1};
-   graph = new TGraph(7,Graph3_fx4,Graph3_fy4);
+   graph = new TGraph(8,Graph3_fx4,Graph3_fy4);
    graph->SetName("Graph3");
    graph->SetTitle("Graph");
    graph->SetFillStyle(1000);
@@ -742,7 +744,55 @@ void HNL_Exclusion()
    Graph_Graph34->GetZaxis()->SetTitleFont(42);
    graph->SetHistogram(Graph_Graph34);
    
-   graph->Draw("l");
+   graph->Draw("c");
+   
+   Double_t Graph4_fx5[8] = {
+   1,
+   2,
+   4,
+   5,
+   4.5,
+   4,
+   2,
+   1};
+   Double_t Graph4_fy5[8] = {
+   3e-06,
+   5e-07,
+   8e-08,
+   1e-07,
+   3e-05,
+   8e-05,
+   0.05,
+   1};
+   graph = new TGraph(8,Graph4_fx5,Graph4_fy5);
+   graph->SetName("Graph4");
+   graph->SetTitle("Graph");
+   graph->SetFillStyle(1000);
+
+   ci = TColor::GetColor("#0000ff");
+   graph->SetLineColor(ci);
+   graph->SetLineStyle(2);
+   graph->SetLineWidth(3);
+   
+   TH1F *Graph_Graph45 = new TH1F("Graph_Graph45","Graph",100,0.6,5.4);
+   Graph_Graph45->SetMinimum(7.2e-08);
+   Graph_Graph45->SetMaximum(1.1);
+   Graph_Graph45->SetDirectory(0);
+   Graph_Graph45->SetStats(0);
+
+   ci = TColor::GetColor("#000099");
+   Graph_Graph45->SetLineColor(ci);
+   Graph_Graph45->GetXaxis()->SetLabelFont(42);
+   Graph_Graph45->GetXaxis()->SetTitleOffset(1);
+   Graph_Graph45->GetXaxis()->SetTitleFont(42);
+   Graph_Graph45->GetYaxis()->SetLabelFont(42);
+   Graph_Graph45->GetYaxis()->SetTitleFont(42);
+   Graph_Graph45->GetZaxis()->SetLabelFont(42);
+   Graph_Graph45->GetZaxis()->SetTitleOffset(1);
+   Graph_Graph45->GetZaxis()->SetTitleFont(42);
+   graph->SetHistogram(Graph_Graph45);
+   
+   graph->Draw("c");
    TLatex *   tex = new TLatex(0.955,0.945,"117 fb^{-1} (13 TeV)");
 tex->SetNDC();
    tex->SetTextAlign(31);

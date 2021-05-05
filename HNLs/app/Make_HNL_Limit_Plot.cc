@@ -119,14 +119,23 @@ int main(int argc, char** argv)
     std::cerr << "[WARNING] input file NOT found!" << std::endl;
   }
 
-  double x_ccs[7] =  {1.0, 2.0, 4.0, 5.0, 4.0, 2.0, 1.0};
-  double y_ccs[7] = {3e-5, 5e-6, 8e-7, 1e-6, 8e-6, 5e-3, 1e-1};
-  int n_ccs = 7;
+  const int n_ccs = 8;
+  double x_ccs[n_ccs] =  {1.0, 2.0, 4.0, 5.0, 4.5, 4.0, 2.0, 1.0};
+  double y_ccs[n_ccs] = {3e-5, 5e-6, 8e-7, 1e-6, 3e-6,8e-6, 5e-3, 1e-1};
+  double y_ccs_v2[n_ccs];
+  double csc_limit_scale = 10.0;
+  for(int i = 0; i < n_ccs; i++)
+  {
+    if( i <= 3 ) y_ccs_v2[i] = y_ccs[i]/csc_limit_scale;
+    else y_ccs_v2[i] = y_ccs[i]*csc_limit_scale;
+  }
+
   TFile* out = new TFile("out_test.root", "recreate");
   TGraph* g_delphi = new TGraph(n_delphi, x_delphi, y_delphi);
   TGraph* g_charm  = new TGraph(n_charm, x_charm, y_charm);
   TGraph* g_exo_20_009  = new TGraph(n_exo_20_009, x_exo_20_009, y_exo_20_009);
   TGraph* g_ccs    = new TGraph(n_ccs, x_ccs, y_ccs);
+  TGraph* g_ccs_v2 = new TGraph(n_ccs, x_ccs, y_ccs_v2);
 
   TCanvas* c = new TCanvas( "c", "c", 2119, 33, 800, 700 );
   c->SetHighLightColor(2);
@@ -181,10 +190,15 @@ int main(int argc, char** argv)
   //gTheory->SetLineStyle(2);
   g_ccs->SetLineColor(kBlue);
 
-  g_delphi->Draw("AL");
-  g_charm->Draw("L");
-  g_exo_20_009->Draw("L");
-  g_ccs->Draw("L");
+  g_ccs_v2->SetLineWidth(3);
+  g_ccs_v2->SetLineColor(kBlue);
+  g_ccs_v2->SetLineStyle(2);
+
+  g_delphi->Draw("AC");
+  g_charm->Draw("C");
+  g_exo_20_009->Draw("C");
+  g_ccs->Draw("C");
+  g_ccs_v2->Draw("C");
 
   AddCMS(c);
   c->SaveAs("HNL_Exclusion.pdf");
