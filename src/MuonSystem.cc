@@ -93,6 +93,7 @@ void MuonSystem::Loop()
    double full_total = 0.0;
    double total[nctau];
    double csc[nctau];
+   double csc_met[nctau];
    double ms_ms[nctau];//csc+csc;csc+dt
    double csc_ecal[nctau];
    double csc_hcal[nctau];
@@ -103,6 +104,7 @@ void MuonSystem::Loop()
    {
      total[i]       = 0.0;
      csc[i]         = 0.0;
+     csc_met[i]     = 0.0;
      ms_ms[i]       = 0.0;
      ctau_weight[i] = 0.0;
      csc_ecal[i]    = 0.0;
@@ -142,7 +144,11 @@ void MuonSystem::Loop()
       //if( det_ID[0] == -2 || det_ID[1] == -2) std::cout << "detector id: " << det_ID[0] << " " << det_ID[1] << std::endl;
       if( det_ID[0] == detectorID::CSC || det_ID[1] == detectorID::CSC)
       {
-        for (int i = 0; i < nctau; i++) csc[i] += my_weight*ctau_weight[i];
+        for (int i = 0; i < nctau; i++)
+        {
+          csc[i] += my_weight*ctau_weight[i];
+          if ( met > 120 ) csc_met[i] += my_weight*ctau_weight[i];
+        }
       }
 
       //if( det_ID[0] == detectorID::CSC && det_ID[1] == detectorID::CSC) for (int i = 0; i < nctau; i++) ms_ms[i] += my_weight*ctau_weight[i];
@@ -178,6 +184,7 @@ void MuonSystem::Loop()
      std::cout << "total: " << total[i] << " csc[i]: " << csc[i] << " ms_ms: " << ms_ms[i] << std::endl;
      csc_v2[i]      = csc[i]/full_total;
      csc[i]         = csc[i]/total[i];//divide by total[i] is the right way to do it!!!
+     csc_met[i]     = csc_met[i]/total[i];
      csc_ecal[i]    = csc_ecal[i]/total[i];
      csc_hcal[i]    = csc_hcal[i]/total[i];
      csc_cal[i]     = csc_ecal[i]+csc_hcal[i];
@@ -188,6 +195,7 @@ void MuonSystem::Loop()
    }
 
    TGraph* acc_csc         = new TGraph(nctau, ctau_points, csc);
+   TGraph* acc_csc_met     = new TGraph(nctau, ctau_points, csc_met);
    TGraph* acc_csc_ecal    = new TGraph(nctau, ctau_points, csc_ecal);
    TGraph* acc_csc_hcal    = new TGraph(nctau, ctau_points, csc_hcal);
    TGraph* acc_csc_cal     = new TGraph(nctau, ctau_points, csc_cal);
@@ -203,6 +211,7 @@ void MuonSystem::Loop()
    h_met_pt->Write();
    h_ht->Write();
    acc_csc->Write("acc_csc");
+   acc_csc_met->Write("acc_csc_met");
    acc_csc_ecal->Write("acc_csc_ecal");
    acc_csc_hcal->Write("acc_csc_hcal");
    acc_csc_cal->Write("acc_csc_cal");
