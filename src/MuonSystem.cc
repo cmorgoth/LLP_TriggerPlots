@@ -5,6 +5,7 @@
 #include <TCanvas.h>
 #include <iostream>
 #include <TGraph.h>
+#include <math.h>
 
 //#define tracker_radius 129
 #define tracker_radius 65
@@ -93,7 +94,8 @@ void MuonSystem::Loop()
    double full_total = 0.0;
    double total[nctau];
    double csc[nctau];
-   double csc_met[nctau];
+   double csc_met120[nctau];
+   double csc_met200[nctau];
    double ms_ms[nctau];//csc+csc;csc+dt
    double csc_ecal[nctau];
    double csc_hcal[nctau];
@@ -104,7 +106,8 @@ void MuonSystem::Loop()
    {
      total[i]       = 0.0;
      csc[i]         = 0.0;
-     csc_met[i]     = 0.0;
+     csc_met120[i]  = 0.0;
+     csc_met200[i]  = 0.0;
      ms_ms[i]       = 0.0;
      ctau_weight[i] = 0.0;
      csc_ecal[i]    = 0.0;
@@ -120,21 +123,34 @@ void MuonSystem::Loop()
       nb = fChain->GetEntry(jentry);   nbytes += nb;
       // if (Cut(ientry) < 0) continue;
 
-      bool big_weight = false;
+      bool is_nan = false;
       for (int i = 0; i < nctau; i++)
       {
         ctau_weight[i] = GetCtau(gLLP_ctau[0], gLLP_ctau[1], ctau/10., ctau_points[i]);
-        if(ctau_weight[i] > 1e2) big_weight = true;
+        if(isnan(ctau_weight[i]))
+        {
+          std::cout << ctau << " " << weight << " " << pileupWeight << " "
+          << met << " " << gHiggsPt << " " << gLLP_ctau[0] << " " << gLLP_ctau[1]
+          << " " << gLLP_eta[0] << " " << gLLP_eta[1] << " " << gLLP_decay_vertex_r[0]
+          << " " << gLLP_decay_vertex_r[1] << " " << gLLP_decay_vertex_x[0]
+          << " " << gLLP_decay_vertex_x[1] << " " << gLLP_decay_vertex_y[0]
+          << " " << gLLP_decay_vertex_y[1] << " " << gLLP_decay_vertex_z[0]
+          << " " << gLLP_decay_vertex_z[1] << std::endl;
+          is_nan = true;
+        }
+        if( ctau_weight[i] > 1e5 ) is_nan = true;
       }
 
-      //if (big_weight) continue;
+      if (is_nan) continue;
       //double my_weight = weight*pileupWeight;
       double my_weight = 1.0;
       full_total += my_weight;
 
       det_ID[0] = GetLLP_DetectorID(0);
       det_ID[1] = GetLLP_DetectorID(1);
-      //std::cout << "ctau30: " << weight_ctau30 << std::endl;
+      // std::cout << ctau << " " << weight << " " << pileupWeight << " "
+      // << met << " " << gHiggsPt << " " << gLLP_ctau[0] << " " << gLLP_ctau[0]
+      // << std::endl;
       h_higgs_pt->Fill(gHiggsPt);
       h_met_pt->Fill(met);
       h_ht->Fill(this->HT);
@@ -147,7 +163,8 @@ void MuonSystem::Loop()
         for (int i = 0; i < nctau; i++)
         {
           csc[i] += my_weight*ctau_weight[i];
-          if ( met > 120 ) csc_met[i] += my_weight*ctau_weight[i];
+          if ( met > 120. ) csc_met120[i] += my_weight*ctau_weight[i];
+          if ( met > 200. ) csc_met200[i] += my_weight*ctau_weight[i];
         }
       }
 
@@ -184,7 +201,8 @@ void MuonSystem::Loop()
      std::cout << "total: " << total[i] << " csc[i]: " << csc[i] << " ms_ms: " << ms_ms[i] << std::endl;
      csc_v2[i]      = csc[i]/full_total;
      csc[i]         = csc[i]/total[i];//divide by total[i] is the right way to do it!!!
-     csc_met[i]     = csc_met[i]/total[i];
+     csc_met120[i]  = csc_met120[i]/total[i];
+     csc_met200[i]  = csc_met200[i]/total[i];
      csc_ecal[i]    = csc_ecal[i]/total[i];
      csc_hcal[i]    = csc_hcal[i]/total[i];
      csc_cal[i]     = csc_ecal[i]+csc_hcal[i];
@@ -195,7 +213,8 @@ void MuonSystem::Loop()
    }
 
    TGraph* acc_csc         = new TGraph(nctau, ctau_points, csc);
-   TGraph* acc_csc_met     = new TGraph(nctau, ctau_points, csc_met);
+   TGraph* acc_csc_met120  = new TGraph(nctau, ctau_points, csc_met120);
+   TGraph* acc_csc_met200  = new TGraph(nctau, ctau_points, csc_met200);
    TGraph* acc_csc_ecal    = new TGraph(nctau, ctau_points, csc_ecal);
    TGraph* acc_csc_hcal    = new TGraph(nctau, ctau_points, csc_hcal);
    TGraph* acc_csc_cal     = new TGraph(nctau, ctau_points, csc_cal);
@@ -211,7 +230,8 @@ void MuonSystem::Loop()
    h_met_pt->Write();
    h_ht->Write();
    acc_csc->Write("acc_csc");
-   acc_csc_met->Write("acc_csc_met");
+   acc_csc_met120->Write("acc_csc_met120");
+   acc_csc_met200->Write("acc_csc_met200");
    acc_csc_ecal->Write("acc_csc_ecal");
    acc_csc_hcal->Write("acc_csc_hcal");
    acc_csc_cal->Write("acc_csc_cal");
