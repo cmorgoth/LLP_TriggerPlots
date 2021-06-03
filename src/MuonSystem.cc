@@ -94,6 +94,7 @@ void MuonSystem::Loop()
    double full_total = 0.0;
    double total[nctau];
    double csc[nctau];
+   double csc_met50[nctau];
    double csc_met120[nctau];
    double csc_met200[nctau];
    double ms_ms[nctau];//csc+csc;csc+dt
@@ -106,6 +107,7 @@ void MuonSystem::Loop()
    {
      total[i]       = 0.0;
      csc[i]         = 0.0;
+     csc_met50[i]   = 0.0;
      csc_met120[i]  = 0.0;
      csc_met200[i]  = 0.0;
      ms_ms[i]       = 0.0;
@@ -126,7 +128,8 @@ void MuonSystem::Loop()
       bool is_nan = false;
       for (int i = 0; i < nctau; i++)
       {
-        ctau_weight[i] = GetCtau(gLLP_ctau[0], gLLP_ctau[1], ctau/10., ctau_points[i]);
+        //ctau_weight[i] = GetCtau(gLLP_ctau[0], gLLP_ctau[1], ctau/10., ctau_points[i]);
+        ctau_weight[i] = GetCtau(gLLP_ctau[0], gLLP_ctau[1], 10., ctau_points[i]);
         if(isnan(ctau_weight[i]))
         {
           std::cout << ctau << " " << weight << " " << pileupWeight << " "
@@ -163,6 +166,7 @@ void MuonSystem::Loop()
         for (int i = 0; i < nctau; i++)
         {
           csc[i] += my_weight*ctau_weight[i];
+          if ( met > 50.  ) csc_met50[i]  += my_weight*ctau_weight[i];
           if ( met > 120. ) csc_met120[i] += my_weight*ctau_weight[i];
           if ( met > 200. ) csc_met200[i] += my_weight*ctau_weight[i];
         }
@@ -201,6 +205,7 @@ void MuonSystem::Loop()
      std::cout << "total: " << total[i] << " csc[i]: " << csc[i] << " ms_ms: " << ms_ms[i] << std::endl;
      csc_v2[i]      = csc[i]/full_total;
      csc[i]         = csc[i]/total[i];//divide by total[i] is the right way to do it!!!
+     csc_met50[i]   = csc_met50[i]/total[i];
      csc_met120[i]  = csc_met120[i]/total[i];
      csc_met200[i]  = csc_met200[i]/total[i];
      csc_ecal[i]    = csc_ecal[i]/total[i];
@@ -213,6 +218,7 @@ void MuonSystem::Loop()
    }
 
    TGraph* acc_csc         = new TGraph(nctau, ctau_points, csc);
+   TGraph* acc_csc_met50   = new TGraph(nctau, ctau_points, csc_met50);
    TGraph* acc_csc_met120  = new TGraph(nctau, ctau_points, csc_met120);
    TGraph* acc_csc_met200  = new TGraph(nctau, ctau_points, csc_met200);
    TGraph* acc_csc_ecal    = new TGraph(nctau, ctau_points, csc_ecal);
@@ -230,6 +236,7 @@ void MuonSystem::Loop()
    h_met_pt->Write();
    h_ht->Write();
    acc_csc->Write("acc_csc");
+   acc_csc_met50->Write("acc_csc_met50");
    acc_csc_met120->Write("acc_csc_met120");
    acc_csc_met200->Write("acc_csc_met200");
    acc_csc_ecal->Write("acc_csc_ecal");

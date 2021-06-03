@@ -1,7 +1,7 @@
 void HNL_Exclusion()
 {
 //=========Macro generated from canvas: c/c
-//=========  (Wed May  5 10:39:06 2021) by ROOT version 6.20/04
+//=========  (Wed May  5 11:16:57 2021) by ROOT version 6.20/04
    TCanvas *c = new TCanvas("c", "c",0,0,800,700);
    c->SetHighLightColor(2);
    c->Range(-1.433735,-10.33333,2.180723,0.7777778);
@@ -756,14 +756,14 @@ void HNL_Exclusion()
    2,
    1};
    Double_t Graph4_fy5[8] = {
-   3e-06,
-   5e-07,
-   8e-08,
-   1e-07,
-   3e-05,
-   8e-05,
-   0.05,
-   1};
+   1.13969e-05,
+   1.899483e-06,
+   3.039172e-07,
+   3.798965e-07,
+   7.896887e-06,
+   2.105836e-05,
+   0.01316148,
+   0.2632296};
    graph = new TGraph(8,Graph4_fx5,Graph4_fy5);
    graph->SetName("Graph4");
    graph->SetTitle("Graph");
@@ -775,8 +775,8 @@ void HNL_Exclusion()
    graph->SetLineWidth(3);
    
    TH1F *Graph_Graph45 = new TH1F("Graph_Graph45","Graph",100,0.6,5.4);
-   Graph_Graph45->SetMinimum(7.2e-08);
-   Graph_Graph45->SetMaximum(1.1);
+   Graph_Graph45->SetMinimum(2.735255e-07);
+   Graph_Graph45->SetMaximum(0.2895525);
    Graph_Graph45->SetDirectory(0);
    Graph_Graph45->SetStats(0);
 

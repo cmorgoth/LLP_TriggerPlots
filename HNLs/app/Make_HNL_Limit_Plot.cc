@@ -123,7 +123,7 @@ int main(int argc, char** argv)
   double x_ccs[n_ccs] =  {1.0, 2.0, 4.0, 5.0, 4.5, 4.0, 2.0, 1.0};
   double y_ccs[n_ccs] = {3e-5, 5e-6, 8e-7, 1e-6, 3e-6,8e-6, 5e-3, 1e-1};
   double y_ccs_v2[n_ccs];
-  double csc_limit_scale = 10.0;
+  double csc_limit_scale = 2.6322956;
   for(int i = 0; i < n_ccs; i++)
   {
     if( i <= 3 ) y_ccs_v2[i] = y_ccs[i]/csc_limit_scale;
